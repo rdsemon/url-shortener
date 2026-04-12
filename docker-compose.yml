@@ -1,0 +1,15 @@
+name: url-shortener,
+services:
+  db:
+    image: postgres:18.3-alpine3.23
+    container_name: url_shortener_db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: url_shortener
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/postgresql/data
+volumes:
+  postgres_data:
