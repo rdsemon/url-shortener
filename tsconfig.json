@@ -8,6 +8,7 @@
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
     "module": "NODENEXT",
+    "moduleResolution": "nodenext",
     "target": "esnext",
 
     // For nodejs:
@@ -43,5 +44,6 @@
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true
-  }
+  },
+  "exclude": ["node_modules", "drizzle.config.ts"]
 }
