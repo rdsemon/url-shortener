@@ -1,12 +1,13 @@
-import type { Request, Response, NextFunction } from "express";
+import type { RequestHandler } from "express";
 import { testApi } from "../utils/apiTester.ts";
-const signUp = (req: Request, res: Response, next: NextFunction) => {
+
+const signUp: RequestHandler = (req, res, next) => {
   console.log(req.body);
 
   testApi(res);
 };
 
-const login = (req: Request, res: Response, next: NextFunction) => {
+const login: RequestHandler = (req, res, next) => {
   console.log(req.body);
 
   testApi(res);
