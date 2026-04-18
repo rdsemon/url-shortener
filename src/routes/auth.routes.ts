@@ -1,8 +1,10 @@
-import express from 'express'
+import express from "express";
 import { login, signUp } from "../controllers/auth.controller.ts";
-const router = express.Router()
+import validateInput from "../middlewares/zodValidator.ts";
+import { singUpSchema } from "../zodSchema/auth.schema.ts";
+const router = express.Router();
 
-router.post('/auth', signUp)
-router.post('/auth', login)
+router.post("/auth", validateInput(singUpSchema), signUp);
+router.post("/auth", login);
 
 export default router;
