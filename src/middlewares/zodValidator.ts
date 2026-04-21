@@ -7,22 +7,20 @@ const validateInput = (schema: any) => {
     const result = schema.safeParse({
       body: req.body,
       params: req.params,
-      query: req.query,
     });
 
     if (!result.success) {
-      console.log(result.error.issues);
+      const errorMessage = result.error.issues
+        .map((el) => el.message)
+        .join(" , ");
 
-      const erros = result.error.issues.map((el) => el.message).join(" , ");
-
-      return next(new AppError(erros, 404));
+      return next(new AppError(errorMessage, 400));
     }
 
-    const { body, params, query } = result.data;
+    const { body, params } = result.data;
 
     req.body = body;
     req.params = params;
-    req.query = query;
 
     next();
   };
