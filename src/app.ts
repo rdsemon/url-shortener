@@ -4,10 +4,12 @@ import authRoute from "./routes/auth.routes.ts";
 import hanldeInvallidRoute from "./middlewares/invalidRoute.ts";
 import handleGlobalError from "./controllers/error.controller.ts";
 import { loger } from "./middlewares/logger.ts";
+import rateLimiter from "./utils/rateLimiter.ts";
 
 const app = express();
 app.use(express.json({ limit: "100kb" }));
 
+app.use(rateLimiter);
 app.use(loger);
 
 app.use("/api/v1", urlRoute);
