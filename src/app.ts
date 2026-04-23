@@ -1,13 +1,15 @@
 import express from "express";
 import urlRoute from "./routes/url.routes.ts";
 import authRoute from "./routes/auth.routes.ts";
+import cookieParser from "cookie-parser";
 import hanldeInvallidRoute from "./middlewares/invalidRoute.ts";
 import handleGlobalError from "./controllers/error.controller.ts";
 import { loger } from "./middlewares/logger.ts";
-import rateLimiter from "./utils/rateLimiter.ts";
+import rateLimiter from "./middlewares/rateLimiter.ts";
 
 const app = express();
 app.use(express.json({ limit: "100kb" }));
+app.use(cookieParser());
 
 app.use(rateLimiter);
 app.use(loger);
