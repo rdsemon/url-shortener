@@ -5,7 +5,13 @@ import usersTable from "../models/user.model.ts";
 import asyncHandler from "../utils/catchAsyncErrorHandler.ts";
 import { eq } from "drizzle-orm";
 import { sendJwt } from "../utils/sendJwt.ts";
-import { createHashPassword, validatePassword } from "../utils/passwrod.ts";
+import { createHashPassword, validatePassword } from "../utils/password.ts";
+import jwt from "jsonwebtoken";
+import type { JwtPayload } from "jsonwebtoken";
+
+interface MyJwtPayload extends JwtPayload {
+  id: string;
+}
 
 const signUp = asyncHandler(async (req, res, next) => {
   const { name, email, password } = req.body;
@@ -49,4 +55,32 @@ const login = asyncHandler(async (req, res, next) => {
     .json({ status: "successful", token, message: "login successful" });
 });
 
-export { signUp, login };
+const protect = asyncHandler(async (req, res, next) => {
+  let jwtToken;
+  const jweSecret = process.env.JWT_SECRET;
+
+  if (!jweSecret) return next(new AppError("Jwt secret is missing", 404));
+
+  if (req.cookies?.token) {
+    jwtToken = req.cookies.token;
+  } else if (req.headers.authorization?.startsWith("Bearer ")) {
+    jwtToken = req.headers.authorization.split(" ")[1];
+  }
+
+  if (!jwtToken) return next(new AppError("Please login first", 404));
+
+  const decode = jwt.verify(jwtToken, jweSecret) as MyJwtPayload;
+
+  const [user] = await db
+    .select({ id: usersTable.id })
+    .from(usersTable)
+    .where(eq(usersTable.id, decode.id));
+
+  if (!user) return next(new AppError("user not found", 404));
+
+  req.user = user;
+
+  next();
+});
+
+export { signUp, login, protect };
