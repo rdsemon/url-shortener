@@ -1,9 +1,9 @@
-import asyncHandler from "../utils/catchAsyncErrorHandler.ts";
-import generateShortUrl from "../utils/createShortUrl.ts";
-import urlsTable from "../models/url.model.ts";
-import AppError from "../utils/appError.ts";
-import db from "../database.ts";
-import { updateClickCount } from "../services/db.services.ts";
+import asyncHandler from "../utils/catchAsyncErrorHandler.js";
+import generateShortUrl from "../utils/createShortUrl.js";
+import urlsTable from "../models/url.model.js";
+import AppError from "../utils/appError.js";
+import db from "../database.js";
+import { updateClickCount } from "../services/db.services.js";
 import { eq } from "drizzle-orm";
 
 const createShortUrl = asyncHandler(async (req, res, next) => {
@@ -46,7 +46,6 @@ const getUrlByCode = asyncHandler(async (req, res, next) => {
   }
 
   const { clickCount, id } = url;
-
   //update the clickCount
   await updateClickCount(clickCount, id);
 
