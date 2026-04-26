@@ -1,11 +1,11 @@
 import express from "express";
-import urlRoute from "./routes/url.routes.ts";
-import authRoute from "./routes/auth.routes.ts";
+import urlRoute from "./routes/url.routes.js";
+import authRoute from "./routes/auth.routes.js";
 import cookieParser from "cookie-parser";
-import hanldeInvallidRoute from "./middlewares/invalidRoute.ts";
-import handleGlobalError from "./controllers/error.controller.ts";
-import { loger } from "./middlewares/logger.ts";
-import rateLimiter from "./middlewares/rateLimiter.ts";
+import hanldeInvallidRoute from "./middlewares/invalidRoute.js";
+import handleGlobalError from "./controllers/error.controller.js";
+import { loger } from "./middlewares/logger.js";
+import rateLimiter from "./middlewares/rateLimiter.js";
 
 const app = express();
 app.use(express.json({ limit: "100kb" }));
