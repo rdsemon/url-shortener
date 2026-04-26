@@ -1,4 +1,4 @@
-import urlsTable from "../models/url.model.ts";
-import usersTable from "../models/user.model.ts";
+import urlsTable from "../models/url.model.js";
+import usersTable from "../models/user.model.js";
 
 export { urlsTable, usersTable };
