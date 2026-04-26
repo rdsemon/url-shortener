@@ -1,11 +1,11 @@
-import { testApi } from "../utils/apiTester.ts";
-import db from "../database.ts";
-import AppError from "../utils/appError.ts";
-import usersTable from "../models/user.model.ts";
-import asyncHandler from "../utils/catchAsyncErrorHandler.ts";
+import { testApi } from "../utils/apiTester.js";
+import db from "../database.js";
+import AppError from "../utils/appError.js";
+import usersTable from "../models/user.model.js";
+import asyncHandler from "../utils/catchAsyncErrorHandler.js";
 import { eq } from "drizzle-orm";
-import { sendJwt } from "../utils/sendJwt.ts";
-import { createHashPassword, validatePassword } from "../utils/password.ts";
+import { sendJwt } from "../utils/sendJwt.js";
+import { createHashPassword, validatePassword } from "../utils/password.js";
 import jwt from "jsonwebtoken";
 import type { JwtPayload } from "jsonwebtoken";
 
