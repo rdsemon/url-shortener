@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 
-import AppError from "../utils/appError.ts";
+import AppError from "../utils/appError.js";
 
 const validateInput = (schema: any) => {
   return (req: Request, res: Response, next: NextFunction) => {
@@ -11,7 +11,7 @@ const validateInput = (schema: any) => {
 
     if (!result.success) {
       const errorMessage = result.error.issues
-        .map((el) => el.message)
+        .map((el: any) => el.message)
         .join(" , ");
 
       return next(new AppError(errorMessage, 400));
