@@ -6,7 +6,7 @@ export const sendJwt = (userId: string, res: Response) => {
 
   if (!jwtSecret) throw new Error("JWT_SECRET is not defined");
 
-  const expiresIn = process.env.JWT_EXPIRE_IN ?? "10m";
+  const expiresIn = process.env.JWT_EXPIRES_IN ?? "10m";
 
   // @ts-expect-error: jsonwebtoken overload issue with expiresIn type
 
