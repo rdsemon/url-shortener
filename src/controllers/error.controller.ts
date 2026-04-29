@@ -1,29 +1,53 @@
+import AppError from "../utils/appError.js";
 import type { Request, Response, NextFunction } from "express";
 
-const sendErrorDev = (err: any, res: Response, statusCode: number) => {
-  res.status(statusCode).json({
+// database errors
+
+const handleDuplicateKeyError = (err: any) => {
+  const detail = err?.cause?.detail || err?.detail || "";
+  const match = detail.match(/\((.*?)\)=\((.*?)\)/);
+
+  let message = "Duplicate field value violates unique constraint";
+
+  if (match) {
+    message = `The ${match[1]} '${match[2]}' is already taken.`;
+  }
+
+  return new AppError(message, 400);
+};
+
+const handleForenginKeyError = () => new AppError("Foregin key not found", 404);
+
+// jwt errors
+const handleJsonWebTokenError = (err: any) => {
+  const message = `${err.message} please login again`;
+  return new AppError(message, 401);
+};
+
+const handleInvalidJsonToken = () => new AppError("Invalid token", 401);
+
+// send error in production
+const sendErrorProd = (err: any, res: Response) => {
+  if (err.isOperational) {
+    return res
+      .status(err.statusCode || 500)
+      .json({ status: err.status, message: err.message });
+  }
+
+  console.log(err);
+
+  res.status(500).json({ status: "error", message: "something went wrong" });
+};
+
+// send error in development
+const sendErrorDev = (err: any, res: Response) => {
+  res.status(err.statusCode || 500).json({
     status: err.status,
     error: err,
-    stack: err.stackTrace,
+    stack: err.stack,
     message: err.message,
   });
 };
-
-const duplicateKeyError = (err: any) => {
-  const detail = err?.detail;
-
-  const match = detail?.match(/\((.*?)\)=\((.*?)\)/);
-
-  const value = match?.[2] ?? "Value";
-
-  const message = `${value} already exists`;
-  return message;
-};
-
-const sendErrorProd = (err: any, res: Response, statusCode: number) => {
-  res.status(statusCode).json({ status: err.status, message: err });
-};
-
 console.log(process.env.NODE_ENV);
 
 const handleGlobalError = (
@@ -32,20 +56,27 @@ const handleGlobalError = (
   res: Response,
   next: NextFunction,
 ) => {
-  const statusCode = err.statusCode || 500;
-
-  if (process.env.NODE_ENV === "production") {
-    sendErrorDev(err, res, statusCode);
-  }
+  err.statusCode = err.statusCode || 500;
+  err.status = err.status || "error";
+  err.message = err.message || "external error";
 
   if (process.env.NODE_ENV === "development") {
-    console.log(err);
-    let error = err;
-    if (error.cause.code === "23505") {
-      error = duplicateKeyError(error);
-    }
-    console.log(error);
-    sendErrorProd(error, res, statusCode);
+    return sendErrorDev(err, res);
+  }
+
+  if (process.env.NODE_ENV === "production") {
+    let error = { ...err, message: err.message, status: err.status };
+    const dbErrorCode = error?.cause?.code;
+
+    if (dbErrorCode === "23505") error = handleDuplicateKeyError(error);
+
+    if (dbErrorCode === "23502") error = handleForenginKeyError();
+
+    if (error.name === "TokenExpiredError")
+      error = handleJsonWebTokenError(error);
+
+    if (error.name === "JsonWebTokenError") error = handleInvalidJsonToken();
+    sendErrorProd(error, res);
   }
 };
 
