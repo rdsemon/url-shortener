@@ -1,6 +1,6 @@
 import * as z from "zod";
 
-const singUpSchema = z.object({
+export const singUpSchema = z.object({
   body: z
     .object({
       name: z.string().trim().min(1, { error: "name is required" }),
@@ -14,11 +14,9 @@ const singUpSchema = z.object({
     }),
 });
 
-const loginSchema = z.object({
+export const loginSchema = z.object({
   body: z.object({
     email: z.email().toLowerCase().trim(),
     password: z.string(),
   }),
 });
-
-export { singUpSchema, loginSchema };
