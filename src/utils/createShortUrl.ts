@@ -1,4 +1,3 @@
-import { nanoid } from "nanoid";
 import { customAlphabet } from "nanoid";
 
 const generateShortUrl = (url: string) => {
