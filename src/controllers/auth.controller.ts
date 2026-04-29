@@ -46,7 +46,8 @@ const login = asyncHandler(async (req, res, next) => {
 
   const correctPass = await validatePassword(password, user.password);
 
-  if (!correctPass) return next(new AppError("incorrect password", 401));
+  if (!correctPass)
+    return next(new AppError("password or email is incorrect", 401));
 
   const token = sendJwt(user.id, res);
 
