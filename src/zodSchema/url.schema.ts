@@ -5,3 +5,9 @@ export const urlSchema = z.object({
     originalUrl: z.url(),
   }),
 });
+
+export const urlParamsSchema = z.object({
+  params: z.object({
+    shortCode: z.string(),
+  }),
+});
