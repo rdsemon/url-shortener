@@ -1,4 +1,3 @@
-import { testApi } from "../utils/apiTester.js";
 import db from "../database.js";
 import AppError from "../utils/appError.js";
 import usersTable from "../models/user.model.js";
@@ -6,6 +5,11 @@ import asyncHandler from "../utils/catchAsyncErrorHandler.js";
 import { eq } from "drizzle-orm";
 import { sendJwt } from "../utils/sendJwt.js";
 import { createHashPassword, validatePassword } from "../utils/password.js";
+import {
+  loginService,
+  signUpService,
+} from "../service/dbService/authDb.service.js";
+
 import jwt from "jsonwebtoken";
 import type { JwtPayload } from "jsonwebtoken";
 
@@ -13,7 +17,7 @@ interface MyJwtPayload extends JwtPayload {
   id: string;
 }
 
-const signUp = asyncHandler(async (req, res, next) => {
+const signUp = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
 
   const hashPassword = await createHashPassword(password);
@@ -23,13 +27,7 @@ const signUp = asyncHandler(async (req, res, next) => {
     email,
     hashPassword,
   };
-
-  const [user] = await db
-    .insert(usersTable)
-    .values(newUser)
-    .returning({ id: usersTable.id });
-
-  if (!user) return next(new AppError(`SignUp fail try again`, 400));
+  const user = await signUpService(newUser);
 
   res.status(201).json({ status: "successful", userId: user.id });
 });
@@ -37,12 +35,7 @@ const signUp = asyncHandler(async (req, res, next) => {
 const login = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
 
-  const [user] = await db
-    .select({ password: usersTable.hashPassword, id: usersTable.id })
-    .from(usersTable)
-    .where(eq(usersTable.email, email));
-
-  if (!user) return next(new AppError("user not found", 404));
+  const user = await loginService(email);
 
   const correctPass = await validatePassword(password, user.password);
 
